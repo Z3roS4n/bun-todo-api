@@ -14,7 +14,7 @@ const start = async () => {
       dir: `${__dirname}/routes`,
     }); 
 
-    console.log("Prisma exists?", app.prisma);
+    console.log(app.printRoutes());
 
     await app.listen({ port: 3000, host: "localhost" });
     console.log("Server is running at http://localhost:3000");
