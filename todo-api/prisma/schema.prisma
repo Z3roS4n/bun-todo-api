@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  runtime = "bun"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model TodoGroup {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  todos     Todo[]
+
+  @@map("todo_groups")
+}
+
+model Todo {
+  id        Int      @id @default(autoincrement())
+  title     String
+  description String?
+  status    Status   @default(PENDING)
+  priority  Priority @default(MEDIUM)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  group     TodoGroup? @relation(fields: [groupId], references: [id])
+  groupId   Int?
+
+  @@map("todos")
+}
+
+enum Status {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
