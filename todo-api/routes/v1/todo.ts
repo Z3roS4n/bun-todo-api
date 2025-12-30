@@ -11,7 +11,7 @@ export default async function todoRoutes(fastify: FastifyInstance) {
   });
 
   fastify.post("/todos", async (request, reply) => {
-    const { title, description, group } = request.body as { title: string; description: string; group: number };
+    const { title, description, group, priority } = request.body as { title: string; description: string; group: number; priority: Priority };
 
     if(!group) return reply.status(400).send({ 
       success: false, 
@@ -25,6 +25,7 @@ export default async function todoRoutes(fastify: FastifyInstance) {
       data: {
         title,
         description,
+        priority,
         status: "PENDING",
         groupId: group,
       },

@@ -1,38 +1,56 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import "./index.css";
 
-import logo from "./logo.svg";
+import logo from "./msworks-logo.svg";
 import reactLogo from "./react.svg";
+import { Button } from "./components/ui/button";
+import { Plus } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import type { GroupsAPIResponse, TodosAPIResponse } from "./types/api";
+import { Badge } from "./components/ui/badge";
+import AddTodo from "./components/add-todo";
 
 export function App() {
+  const { data: groups } = useQuery<GroupsAPIResponse>({
+    queryKey: ["groups"],
+    queryFn: async () => {
+      const response = await fetch("http://localhost:4000/v1/groups");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    },
+  });
+
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center gap-6">
-      <Card className="w-[400px]">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <img src={logo} className="h-8 w-8" alt="Bun Todo App Logo" />
-            Bun Todo App
-          </CardTitle>
-          <CardDescription>A simple todo app using Bun, Fastify, and Prisma.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="mb-4">
-            This is a simple todo application built with Bun as the runtime, Fastify as the web framework, and Prisma as the ORM. It demonstrates how to create, read, update, and delete todos, as well as group them.
-          </p>
-          <p className="mb-4">
-            The backend API is powered by Bun and Fastify, providing a fast and efficient server. Prisma is used to interact with the database, making data management easy and type-safe.
-          </p>
-          <p>
-            Explore the code to see how
-            these technologies work together to create a seamless full-stack application!
-          </p>
-        </CardContent>
-      </Card>
-      <div className="flex items-center gap-4">
-        <span>Powered by</span>
-        <img src={reactLogo} className="h-8 w-8" alt="React Logo" />
-        <img src={logo} className="h-8 w-8" alt="Bun Todo App Logo" />
-      </div>
+    <div className="flex min-h-screen flex-col gap-6 bg-gradient-to-b from-white to-gray-100 p-4">
+      <header className="flex w-full  flex-row justify-between items-center gap-4 bg-white/50 p-4 rounded-lg shadow-md backdrop-blur-sm">
+        <img src={logo} className="h-12 w-12 animate-spin-slow" alt="Bun Logo" />
+        <div className="flex flex-row gap-2 justify-end">
+          <AddTodo groups={groups?.data.groups ?? []}><Button><Plus></Plus> Add Task</Button></AddTodo>
+        </div>
+      </header>
+      <main className="flex w-full flex-col gap-4">
+        {
+          groups?.data.groups.map((group) => (
+            <div key={group.id} className="flex flex-col gap-2">
+              <h2 className="text-2xl font-bold">{group.name}</h2>
+              <div className="flex flex-col gap-2">
+                {group.todos.map((todo) => (
+                  <Card key={todo.id} className="w-full">
+                    <CardHeader>
+                      <CardTitle className="flex flex-row gap-4 items-center">{todo.title} <Badge>{todo.status}</Badge></CardTitle>
+                      <CardDescription>{todo.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </main>
     </div>
   );
 }
