@@ -1,5 +1,7 @@
+import { error } from './../../node_modules/ajv/lib/vocabularies/applicator/dependencies';
+import { group } from './../../node_modules/effect/src/Array';
 import type { FastifyInstance } from "fastify";
-import type { Status } from "../../generated/prisma/enums";
+import { Status, type Priority } from "../../generated/prisma/enums";
 
 export default async function todoRoutes(fastify: FastifyInstance) {
   fastify.get("/todos", async (request, reply) => {
@@ -9,26 +11,39 @@ export default async function todoRoutes(fastify: FastifyInstance) {
   });
 
   fastify.post("/todos", async (request, reply) => {
-    const { title } = request.body as { title: string };
+    const { title, description, group } = request.body as { title: string; description: string; group: number };
+
+    if(!group) return reply.status(400).send({ 
+      success: false, 
+      error: { 
+        code: "GROUP_ID_REQUIRED", 
+        message: "Group ID is required to create a todo." 
+      } 
+    });
 
     const newTodo = await fastify.prisma.todo.create({
       data: {
         title,
-        status: "PENDING"
+        description,
+        status: "PENDING",
+        groupId: group,
       },
     });
+
     return { success: true, data: { todo: newTodo } };
   });
 
   fastify.put("/todos/:id", async (request, reply) => {
     const { id } = request.params as { id: string };
-    const { title, status } = request.body as { title?: string; status?: Status };
+    const { title, status, description, priority } = request.body as { title?: string; status?: Status; description?: string; priority?: Priority };
 
     const updatedTodo = await fastify.prisma.todo.update({
       where: { id: Number(id) },
       data: {
         title,
+        description,
         status,
+        priority
       },
     });
 
@@ -41,5 +56,16 @@ export default async function todoRoutes(fastify: FastifyInstance) {
       where: { id: Number(id) },
     });
     return { success: true };
+  });
+
+  fastify.get("/todos/groups", async (request, reply) => {
+    const groupedTodos = await fastify.prisma.todo.groupBy({
+      by: ['status'],
+      _count: {
+        id: true,
+      },
+    });
+
+    return { success: true, data: { groupedTodos } };
   });
 }

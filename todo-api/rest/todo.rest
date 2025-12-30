@@ -1,0 +1,36 @@
+POST http://localhost:3000/v1/todos
+Content-Type: application/json
+
+{
+  "title": "Buy groceries",
+  "description": "Milk, Bread, Eggs, Butter",
+  "group": 1
+}
+
+// GET all todos
+GET http://localhost:3000/v1/todos
+Accept: application/json
+
+// Update a todo (replace :id with actual todo ID)
+PUT http://localhost:3000/v1/todos/1
+Content-Type: application/json
+
+{
+  "title": "Buy groceries and fruits",
+  "status": "in-progress",
+  "description": "Milk, Bread, Eggs, Butter, Apples"
+}
+
+// DELETE a todo (replace :id with actual todo ID)
+DELETE http://localhost:3000/v1/todos/1
+
+POST http://localhost:3000/v1/groups
+Content-Type: application/json
+
+{
+  "name": "Work Tasks"
+}
+
+// GET all groups
+GET http://localhost:3000/v1/groups
+Accept: application/json
