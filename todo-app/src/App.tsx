@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { GroupsAPIResponse, TodosAPIResponse } from "./types/api";
 import { Badge } from "./components/ui/badge";
 import AddTodo from "./components/add-todo";
+import AddGroup from "./components/add-group";
 
 export function App() {
   const { data: groups } = useQuery<GroupsAPIResponse>({
@@ -27,7 +28,8 @@ export function App() {
       <header className="flex w-full  flex-row justify-between items-center gap-4 bg-white/50 p-4 rounded-lg shadow-md backdrop-blur-sm">
         <img src={logo} className="h-12 w-12 animate-spin-slow" alt="Bun Logo" />
         <div className="flex flex-row gap-2 justify-end">
-          <AddTodo groups={groups?.data.groups ?? []}><Button><Plus></Plus> Add Task</Button></AddTodo>
+          <AddGroup><Button variant={"outline"}><Plus></Plus> Group</Button></AddGroup>
+          <AddTodo groups={groups?.data.groups ?? []}><Button><Plus></Plus> Task</Button></AddTodo>
         </div>
       </header>
       <main className="flex w-full flex-col gap-4">
@@ -36,7 +38,7 @@ export function App() {
             <div key={group.id} className="flex flex-col gap-2">
               <h2 className="text-2xl font-bold">{group.name}</h2>
               <div className="flex flex-col gap-2">
-                {group.todos.map((todo) => (
+                {group.todos?.map((todo) => (
                   <Card key={todo.id} className="w-full">
                     <CardHeader>
                       <CardTitle className="flex flex-row gap-4 items-center">{todo.title} <Badge>{todo.status}</Badge></CardTitle>

@@ -64,7 +64,7 @@ export default function AddTodo({ children, groups }: { children: React.ReactNod
               </SelectTrigger>
               <SelectContent>
                 {groups?.map((group) => (
-                  <SelectItem key={group.id} value={group.id.toString()}>{group.name}</SelectItem>
+                  <SelectItem key={group.id} value={group.id?.toString() ?? ""}>{group.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

@@ -20,9 +20,9 @@ export interface Todo {
 }
 
 export interface Group {
-  id: number;
+  id?: number;
   name: string;
-  todos: Todo[];
+  todos?: Todo[];
 }
 
 export interface TodosAPIResponse {
